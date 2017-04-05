@@ -1,12 +1,14 @@
-#include "window.h"
+#include "startmenu.h"
 #include <QApplication>
 
 int main(int argc, char *argv[])
 {
+    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QApplication app(argc, argv);
-    app.setAttribute(Qt::AA_EnableHighDpiScaling);
-    Window w;
-    w.setFixedSize(480, 720);
+    StartMenu w;
+
+    w.init();
+
     w.show();
 
     return app.exec();

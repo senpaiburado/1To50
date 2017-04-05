@@ -14,12 +14,15 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         window.cpp \
-    game.cpp
+    game.cpp \
+    startmenu.cpp
 
 HEADERS  += window.h \
-    game.h
+    game.h \
+    startmenu.h
 
-FORMS    += window.ui
+FORMS    += window.ui \
+    startmenu.ui
 
 CONFIG += mobility
 MOBILITY = 

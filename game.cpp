@@ -54,6 +54,18 @@ int Game::getStep()
     return step;
 }
 
+void Game::refresh()
+{
+    temp.erase(temp.begin(), temp.end());
+    numbers.erase(numbers.begin(), numbers.end());
+
+    for (size_t i(0); i < 50; i++)
+        numbers.push_back(i+1);
+
+    step = 1;
+    set25Numbers();
+}
+
 int Game::getNextCell()
 {
     std::srand(time(NULL));

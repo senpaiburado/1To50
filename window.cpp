@@ -3,24 +3,10 @@
 
 Window::Window(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::Window)
+    ui(new Ui::Window),
+    menu(NULL)
 {
     ui->setupUi(this);
-    game = new Game();
-
-    pushButtonsInArray();
-    setValuesForButtons();
-    setStepLabel(game->getStep());
-    setConnectsButtons();
-    timer = new QTimer(this);
-    time = 0;
-
-    connect(timer, &QTimer::timeout, this, [&]() {
-        time++;
-        ui->clock->display(time);
-    });
-
-    timer->start(1000);
 }
 
 Window::~Window()
@@ -30,12 +16,87 @@ Window::~Window()
     for (size_t i(0); i < buttons.size(); i++)
         delete buttons[i];
     delete timer;
+    delete menu;
 }
 
 void Window::setStepLabel(int step)
 {
     ui->nextLabel->setText(step >= 50 ? "50" : QString::number(step));
-    ui->nextNextLabel->setText((step++) >= 50 ? "50" : QString::number(step++)+);
+    ui->nextNextLabel->setText((step + 1) >= 50 ? "50" : QString::number(step+1));
+
+    if (step == 51)
+    {
+        timer->stop();
+        time = -3;
+        QMessageBox::information(this, "The end!", "Game over! Score: " + QString::number(ui->clock->value()));
+        saveScore(ui->clock->value());
+        getScore();
+        menu->init();
+        menu->show();
+        this->hide();
+        game->refresh();
+    }
+}
+
+void Window::start()
+{
+    timer->start(1000);
+}
+
+void Window::init()
+{
+    game = new Game();
+
+    menu = new StartMenu(this);
+
+    pushButtonsInArray();
+    setValuesForButtons();
+    setStepLabel(game->getStep());
+    setConnectsButtons();
+    getScore();
+    timer = new QTimer(this);
+    time = -3;
+    ui->clock->display(time);
+
+    foreach(QPushButton *but, buttons)
+        but->setEnabled(false);
+
+    connect(timer, &QTimer::timeout, this, [&]() {
+        time++;
+        ui->clock->display(time);
+        if (time == 0)
+        {
+            foreach(QPushButton *but, buttons)
+                but->setEnabled(true);
+        }
+    });
+}
+
+void Window::getScore()
+{
+    QFile file("score.dat");
+    if (!file.exists())
+        max_score = 0;
+    else
+    {
+        file.open(QIODevice::ReadOnly);
+        QTextStream stream(&file);
+        QString str = stream.readLine();
+        max_score = str.toInt();
+        ui->scoreLabel->setText(QString::number(max_score));
+        file.close();
+    }
+}
+
+void Window::saveScore(int score)
+{
+    if (!score > max_score)
+        return;
+    QFile file("score.dat");
+    file.open(QIODevice::WriteOnly);
+    QTextStream stream(&file);
+    stream << score << endl;
+    file.close();
 }
 
 void Window::setValuesForButtons()
@@ -43,7 +104,6 @@ void Window::setValuesForButtons()
     for (size_t i(0); i < buttons.size(); i++)
     {
         buttons[i]->setText(QString::number(game->get25Numbers().at(i)));
-
     }
 }
 
@@ -181,5 +241,5 @@ void Window::setConnectsButtons()
 //    });
 //    connect(ui->b25, &QPushButton::pressed, this, [&](){
 //        connectButtons(ui->b25);
-//    });
+    //    });
 }

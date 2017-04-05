@@ -6,6 +6,8 @@
 #include <QtWidgets>
 #include <QTimer>
 #include "game.h"
+class StartMenu;
+#include "startmenu.h"
 
 namespace Ui {
 class Window;
@@ -20,15 +22,22 @@ public:
     ~Window();
 
     void setStepLabel(int step);
+    void start();
+    void init();
 
 private:
     Ui::Window *ui;
     Game *game;
     QVector<QPushButton*> buttons;
     QTimer *timer;
+    StartMenu *menu;
     int time;
 
+    int max_score;
 
+
+    void saveScore(int score);
+    void getScore();
     void setValuesForButtons();
     void pushButtonsInArray();
     void connectButtons(QPushButton *but);
