@@ -90,7 +90,7 @@ void Window::getScore()
 
 void Window::saveScore(int score)
 {
-    if (!score > max_score)
+    if (score >= max_score)
         return;
     QFile file("score.dat");
     file.open(QIODevice::WriteOnly);
